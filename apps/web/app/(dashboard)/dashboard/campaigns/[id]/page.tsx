@@ -151,7 +151,7 @@ export default async function CampaignDetailPage({ params }: CampaignDetailPageP
               <div>
                 <p className="mb-2 text-sm font-medium">Channels</p>
                 <div className="flex flex-wrap gap-2">
-                  {campaign.channels.map((channel) => (
+                  {campaign.channels.map((channel: string) => (
                     <Badge key={channel} variant="outline">
                       {channel}
                     </Badge>
