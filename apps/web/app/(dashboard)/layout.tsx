@@ -3,6 +3,10 @@ import { createClient } from '@/lib/supabase/server';
 import { DashboardNav } from '@/components/dashboard/nav';
 import { DashboardHeader } from '@/components/dashboard/header';
 
+// Force dynamic rendering for all dashboard pages
+// These pages use cookies for authentication and can't be statically generated
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardLayout({
   children,
 }: {
