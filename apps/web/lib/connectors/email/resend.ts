@@ -144,7 +144,7 @@ export class ResendConnector extends BaseConnector implements EmailConnector {
         to: toAddresses,
         subject: params.subject,
         html: params.body,
-        reply_to: params.replyTo,
+        replyTo: params.replyTo,
         headers,
       });
 

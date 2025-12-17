@@ -44,24 +44,34 @@ export const visitorIdentifiedHandler = inngest.createFunction(
 
         if (config?.credentials?.api_key) {
           const clearbit = new ClearbitConnector({
-            apiKey: config.credentials.api_key,
+            id: `clearbit-${organizationId}`,
+            organizationId,
+            type: 'visitor_identification',
+            name: 'Clearbit',
+            credentials: {
+              apiKey: config.credentials.api_key,
+            },
+            config: {},
+            active: true,
           });
 
           try {
             const enrichment = await clearbit.enrichCompany(companyDomain);
 
-            await supabase
-              .from('website_visitors')
-              .update({
-                company_name: enrichment.name || visitor.company_name,
-                company_logo_url: enrichment.logo,
-                enrichment_data: {
-                  ...visitor.enrichment_data,
-                  ...enrichment,
-                  enriched_at: new Date().toISOString(),
-                },
-              })
-              .eq('id', visitorId);
+            if (enrichment) {
+              await supabase
+                .from('website_visitors')
+                .update({
+                  company_name: enrichment.name || visitor.company_name,
+                  company_logo_url: enrichment.logo,
+                  enrichment_data: {
+                    ...visitor.enrichment_data,
+                    ...enrichment,
+                    enriched_at: new Date().toISOString(),
+                  },
+                })
+                .eq('id', visitorId);
+            }
           } catch (error) {
             console.error('Clearbit enrichment failed:', error);
           }

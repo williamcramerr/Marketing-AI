@@ -312,7 +312,7 @@ export class OAuthService {
   ): Promise<UserInfo> {
     const config = getProviderConfig(provider);
 
-    let url = config.userInfoUrl;
+    let url: string = config.userInfoUrl;
     const headers: Record<string, string> = {
       Authorization: `Bearer ${accessToken}`,
     };

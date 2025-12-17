@@ -65,8 +65,8 @@ export class GhostConnector extends BaseConnector implements CMSConnector {
   constructor(config: ConnectorConfig) {
     super(config);
 
-    const credentials = config.credentials as GhostCredentials;
-    const ghostConfig = config.config as GhostConfig;
+    const credentials = config.credentials as unknown as GhostCredentials;
+    const ghostConfig = config.config as unknown as GhostConfig;
 
     if (!credentials.adminApiKey) {
       throw new Error('Ghost Admin API key is required');
@@ -409,7 +409,7 @@ export class GhostConnector extends BaseConnector implements CMSConnector {
       const slug = params.metadata?.slug as string | undefined;
 
       // Prepare update data - only include fields that are being updated
-      const post: GhostPost = {
+      const post: Partial<GhostPost> & { updated_at?: string } = {
         updated_at: existingPost.updated_at, // Required for optimistic locking
       };
 

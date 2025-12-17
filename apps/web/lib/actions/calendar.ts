@@ -79,7 +79,11 @@ export async function getCalendarEvents(
   // Map tasks to events
   if (tasks) {
     tasks.forEach((task) => {
-      const campaign = task.campaigns as { id: string; name: string; product_id: string; products: { id: string; name: string } | null } | null;
+      const campaignsData = task.campaigns;
+      const campaignRaw = Array.isArray(campaignsData) ? campaignsData[0] : campaignsData;
+      const campaign = campaignRaw as { id: string; name: string; product_id: string; products: { id: string; name: string }[] | { id: string; name: string } | null } | null;
+      const productData = campaign?.products;
+      const product = Array.isArray(productData) ? productData[0] : productData;
       events.push({
         id: task.id,
         title: task.title,
@@ -89,8 +93,8 @@ export async function getCalendarEvents(
         contentType: task.type,
         campaignId: campaign?.id,
         campaignName: campaign?.name,
-        productId: campaign?.products?.id,
-        productName: campaign?.products?.name,
+        productId: product?.id,
+        productName: product?.name,
       });
     });
   }
@@ -98,7 +102,8 @@ export async function getCalendarEvents(
   // Map campaigns to events (start date)
   if (campaigns) {
     campaigns.forEach((campaign) => {
-      const product = campaign.products as { id: string; name: string } | null;
+      const productData = campaign.products;
+      const product = (Array.isArray(productData) ? productData[0] : productData) as { id: string; name: string } | null;
       if (campaign.start_date) {
         events.push({
           id: `campaign-start-${campaign.id}`,

@@ -53,13 +53,13 @@ export class LinkedInConnector extends BaseConnector implements SocialConnector 
     super(config);
 
     // Extract and validate credentials
-    this.credentials = config.credentials as LinkedInCredentials;
+    this.credentials = config.credentials as unknown as LinkedInCredentials;
     if (!this.credentials.accessToken) {
       throw new Error('LinkedIn access token is required');
     }
 
     // Extract LinkedIn-specific configuration
-    this.linkedInConfig = config.config as LinkedInConfig;
+    this.linkedInConfig = config.config as unknown as LinkedInConfig;
   }
 
   /**

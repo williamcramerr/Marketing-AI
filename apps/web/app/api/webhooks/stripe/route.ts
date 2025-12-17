@@ -222,9 +222,10 @@ async function handleInvoicePaid(
   const supabase = createAdminClient();
 
   // Get organization from subscription metadata
-  if (invoice.subscription) {
+  const subscriptionId = (invoice as any).subscription;
+  if (subscriptionId) {
     const subscription = await stripe.subscriptions.retrieve(
-      invoice.subscription as string
+      subscriptionId as string
     );
     const organizationId = subscription.metadata.organizationId;
 
@@ -262,9 +263,10 @@ async function handleInvoicePaymentFailed(
 ) {
   const supabase = createAdminClient();
 
-  if (invoice.subscription) {
+  const failedInvoiceSubscriptionId = (invoice as any).subscription;
+  if (failedInvoiceSubscriptionId) {
     const subscription = await stripe.subscriptions.retrieve(
-      invoice.subscription as string
+      failedInvoiceSubscriptionId as string
     );
     const organizationId = subscription.metadata.organizationId;
 

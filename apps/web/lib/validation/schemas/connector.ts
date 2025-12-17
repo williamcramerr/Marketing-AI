@@ -32,9 +32,7 @@ export type ConnectorType = (typeof CONNECTOR_TYPES)[number];
  * Connector type schema
  */
 export const connectorTypeSchema = z.enum(CONNECTOR_TYPES, {
-  errorMap: () => ({
-    message: `Invalid connector type. Must be one of: ${CONNECTOR_TYPES.join(', ')}`,
-  }),
+  message: `Invalid connector type. Must be one of: ${CONNECTOR_TYPES.join(', ')}`,
 });
 
 /**
@@ -193,7 +191,7 @@ export type ListConnectorsQuery = z.infer<typeof listConnectorsQuerySchema>;
 export function validateConnectorCredentials(
   type: ConnectorType,
   credentials: unknown
-): z.SafeParseReturnType<unknown, unknown> {
+) {
   const schema = getCredentialsSchema(type);
   return schema.safeParse(credentials);
 }

@@ -13,6 +13,11 @@ export const taskWorkflow = inngest.createFunction(
     retries: 3,
     onFailure: async ({ event, error }) => {
       const supabase = createAdminClient();
+      // The event structure in onFailure contains the original event nested
+      const failureEvent = event as unknown as {
+        event: { data: { taskId: string; organizationId: string } };
+      };
+      const { taskId, organizationId } = failureEvent.event.data;
 
       await supabase
         .from('tasks')
@@ -26,16 +31,16 @@ export const taskWorkflow = inngest.createFunction(
             },
           ],
         })
-        .eq('id', event.data.taskId);
+        .eq('id', taskId);
 
       // Log to audit
       await supabase.from('audit_logs').insert({
-        organization_id: event.data.organizationId,
+        organization_id: organizationId,
         action: 'task.failed',
         actor_type: 'system',
         actor_id: 'inngest',
         resource_type: 'task',
-        resource_id: event.data.taskId,
+        resource_id: taskId,
         metadata: { error: error.message },
       });
     },
@@ -433,11 +438,15 @@ export const heartbeatFunction = inngest.createFunction(
     if (queuedTasks.length > 0) {
       await step.run('trigger-tasks', async () => {
         for (const task of queuedTasks) {
+          // Handle nested relations that may be arrays
+          const campaign = Array.isArray(task.campaign) ? task.campaign[0] : task.campaign;
+          const product = campaign ? (Array.isArray(campaign.product) ? campaign.product[0] : campaign.product) : null;
+
           await inngest.send({
             name: 'task/queued',
             data: {
               taskId: task.id,
-              organizationId: task.campaign?.product?.organization_id || '',
+              organizationId: product?.organization_id || '',
             },
           });
         }

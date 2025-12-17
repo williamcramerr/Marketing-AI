@@ -124,7 +124,7 @@ export class GoogleAdsConnector extends BaseConnector implements AdvertisingConn
       // Set expiry (typically 3600 seconds, but we'll refresh a bit earlier)
       this.tokenExpiry = new Date(Date.now() + (data.expires_in - 300) * 1000);
 
-      return this.accessToken;
+      return this.accessToken!;
     } catch (error: any) {
       console.error('Error refreshing Google Ads access token:', error);
       throw new Error(`Failed to authenticate with Google Ads: ${error.message}`);

@@ -273,22 +273,22 @@ export async function syncSubscriptionFromStripe(
           : stripeSubscription.customer.id,
       status: stripeSubscription.status,
       current_period_start: new Date(
-        stripeSubscription.current_period_start * 1000
+        (stripeSubscription as any).current_period_start * 1000
       ).toISOString(),
       current_period_end: new Date(
-        stripeSubscription.current_period_end * 1000
+        (stripeSubscription as any).current_period_end * 1000
       ).toISOString(),
-      cancel_at: stripeSubscription.cancel_at
-        ? new Date(stripeSubscription.cancel_at * 1000).toISOString()
+      cancel_at: (stripeSubscription as any).cancel_at
+        ? new Date((stripeSubscription as any).cancel_at * 1000).toISOString()
         : null,
       canceled_at: stripeSubscription.canceled_at
         ? new Date(stripeSubscription.canceled_at * 1000).toISOString()
         : null,
-      trial_start: stripeSubscription.trial_start
-        ? new Date(stripeSubscription.trial_start * 1000).toISOString()
+      trial_start: (stripeSubscription as any).trial_start
+        ? new Date((stripeSubscription as any).trial_start * 1000).toISOString()
         : null,
-      trial_end: stripeSubscription.trial_end
-        ? new Date(stripeSubscription.trial_end * 1000).toISOString()
+      trial_end: (stripeSubscription as any).trial_end
+        ? new Date((stripeSubscription as any).trial_end * 1000).toISOString()
         : null,
       updated_at: new Date().toISOString(),
     },

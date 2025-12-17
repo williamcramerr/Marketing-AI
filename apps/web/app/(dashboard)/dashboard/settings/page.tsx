@@ -30,7 +30,8 @@ export default async function SettingsPage() {
     .select('organization_id, role, organizations(id, name, slug, settings)')
     .eq('user_id', user!.id);
 
-  const organization = memberships?.[0]?.organizations;
+  const organizationsData = memberships?.[0]?.organizations;
+  const organization = Array.isArray(organizationsData) ? organizationsData[0] : organizationsData;
   const userRole = memberships?.[0]?.role;
 
   if (!organization) {

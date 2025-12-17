@@ -27,6 +27,7 @@ export interface AudienceContext {
   painPoints: string[];
   goals: string[];
   psychographics?: string;
+  messaging?: string;
 }
 
 // Base system prompt used across all content types

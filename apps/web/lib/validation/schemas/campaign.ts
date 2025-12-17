@@ -29,9 +29,7 @@ export const CAMPAIGN_STATUSES = [
 export type CampaignStatus = (typeof CAMPAIGN_STATUSES)[number];
 
 export const campaignStatusSchema = z.enum(CAMPAIGN_STATUSES, {
-  errorMap: () => ({
-    message: `Invalid campaign status. Must be one of: ${CAMPAIGN_STATUSES.join(', ')}`,
-  }),
+  message: `Invalid campaign status. Must be one of: ${CAMPAIGN_STATUSES.join(', ')}`,
 });
 
 /**

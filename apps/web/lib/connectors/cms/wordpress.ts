@@ -60,7 +60,7 @@ export class WordPressConnector extends BaseConnector implements CMSConnector {
   constructor(config: ConnectorConfig) {
     super(config);
 
-    this.credentials = config.credentials as WordPressCredentials;
+    this.credentials = config.credentials as unknown as WordPressCredentials;
 
     if (!this.credentials.siteUrl || !this.credentials.username || !this.credentials.applicationPassword) {
       throw new Error('WordPress site URL, username, and application password are required');
@@ -194,8 +194,8 @@ export class WordPressConnector extends BaseConnector implements CMSConnector {
       // Determine post status
       const status = params.status === 'published' ? 'publish' : 'draft';
 
-      // Build post data
-      const postData: Partial<WordPressPost> & { title: string; content: string } = {
+      // Build post data - WordPress accepts strings for title/content on creation
+      const postData: Record<string, unknown> = {
         title: params.title,
         content: params.content,
         status: scheduledDate ? 'future' : status,

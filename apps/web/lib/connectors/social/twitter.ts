@@ -423,7 +423,7 @@ export class TwitterConnector extends BaseConnector implements SocialConnector {
     // Twitter media upload uses a different endpoint and OAuth 1.0a
     // This is a simplified version - production code should use chunked upload for large files
     const formData = new FormData();
-    formData.append('media', new Blob([mediaBuffer]));
+    formData.append('media', new Blob([new Uint8Array(mediaBuffer)]));
 
     const response = await fetch(`${this.apiV1BaseUrl}/media/upload.json`, {
       method: 'POST',

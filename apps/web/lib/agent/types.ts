@@ -66,7 +66,7 @@ export interface InteractionSummary {
   taskType: string;
   contentSummary: string;
   outcome: 'success' | 'failure' | 'pending';
-  performanceMetrics?: Record<string, number>;
+  performanceMetrics?: PerformanceMetrics;
   userFeedback?: string;
 }
 
@@ -148,6 +148,9 @@ export interface PerformanceEntry {
 }
 
 export interface PerformanceMetrics {
+  // Index signature for Record<string, number> compatibility
+  [key: string]: number | undefined;
+
   // Engagement metrics
   openRate?: number;
   clickRate?: number;

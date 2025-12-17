@@ -8,6 +8,13 @@ type Events = {
       organizationId: string;
     };
   };
+  'task/workflow.start': {
+    data: {
+      taskId: string;
+      organizationId: string;
+      retry?: boolean;
+    };
+  };
   'task/approved': {
     data: {
       taskId: string;

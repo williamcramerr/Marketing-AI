@@ -189,7 +189,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
                   href={`/dashboard/tasks?${params.status ? `status=${params.status}&` : ''}type=${type}`}
                 >
                   <Button variant={params.type === type ? 'default' : 'outline'} size="sm">
-                    {type.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+                    {type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                   </Button>
                 </Link>
               ))}

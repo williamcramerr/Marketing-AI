@@ -170,22 +170,36 @@ export async function createLeadMagnet(input: FormData | CreateLeadMagnetInput):
   return { success: true, data: magnet };
 }
 
-export async function updateLeadMagnet(id: string, formData: FormData) {
+interface UpdateLeadMagnetInput {
+  title?: string;
+  description?: string;
+  active?: boolean;
+  landingPageConfig?: Record<string, unknown>;
+}
+
+export async function updateLeadMagnet(id: string, input: FormData | UpdateLeadMagnetInput) {
   const supabase = await createClient();
 
   const updates: Record<string, unknown> = {};
 
-  const title = formData.get('title');
-  if (title) updates.title = title;
+  if (input instanceof FormData) {
+    const title = input.get('title');
+    if (title) updates.title = title;
 
-  const description = formData.get('description');
-  if (description !== null) updates.description = description;
+    const description = input.get('description');
+    if (description !== null) updates.description = description;
 
-  const active = formData.get('active');
-  if (active !== null) updates.active = active === 'true';
+    const active = input.get('active');
+    if (active !== null) updates.active = active === 'true';
 
-  const landingPageConfig = formData.get('landing_page_config');
-  if (landingPageConfig) updates.landing_page_config = JSON.parse(landingPageConfig as string);
+    const landingPageConfig = input.get('landing_page_config');
+    if (landingPageConfig) updates.landing_page_config = JSON.parse(landingPageConfig as string);
+  } else {
+    if (input.title !== undefined) updates.title = input.title;
+    if (input.description !== undefined) updates.description = input.description;
+    if (input.active !== undefined) updates.active = input.active;
+    if (input.landingPageConfig !== undefined) updates.landing_page_config = input.landingPageConfig;
+  }
 
   const { data: magnet, error } = await supabase
     .from('lead_magnets')

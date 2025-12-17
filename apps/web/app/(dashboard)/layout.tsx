@@ -24,12 +24,15 @@ export default async function DashboardLayout({
     .select('organization_id, role, organizations(id, name, slug)')
     .eq('user_id', user.id);
 
-  const organizations = memberships?.map((m) => ({
-    id: m.organizations?.id,
-    name: m.organizations?.name,
-    slug: m.organizations?.slug,
-    role: m.role,
-  })).filter(Boolean) || [];
+  const organizations = memberships?.map((m) => {
+    const org = Array.isArray(m.organizations) ? m.organizations[0] : m.organizations;
+    return {
+      id: org?.id,
+      name: org?.name,
+      slug: org?.slug,
+      role: m.role,
+    };
+  }).filter(Boolean) || [];
 
   return (
     <div className="flex min-h-screen">

@@ -42,7 +42,7 @@ export function ReplyComposer({
       });
 
       if (result.success && result.data) {
-        setReplyId(result.data.id);
+        setReplyId(result.data.id as string);
         setStatus('saved');
         setTimeout(() => setStatus('idle'), 2000);
       }

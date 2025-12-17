@@ -51,7 +51,24 @@ export async function getListeningConfig(id: string) {
   return config;
 }
 
-export async function createListeningConfig(formData: FormData) {
+interface CreateListeningConfigInput {
+  name: string;
+  organizationId?: string;
+  productId?: string | null;
+  platforms: string[];
+  keywords: string[];
+  negativeKeywords?: string[];
+  subreddits?: string[];
+  intentThreshold?: 'low' | 'medium' | 'high';
+  autoRespond?: boolean;
+  responseTemplate?: string;
+}
+
+export async function createListeningConfig(input: FormData | CreateListeningConfigInput): Promise<{
+  success: boolean;
+  data?: Record<string, unknown>;
+  error?: string;
+}> {
   const supabase = await createClient();
 
   const {
@@ -59,19 +76,58 @@ export async function createListeningConfig(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error('Not authenticated');
+    return { success: false, error: 'Not authenticated' };
   }
 
-  const name = formData.get('name') as string;
-  const organizationId = formData.get('organization_id') as string;
-  const productId = formData.get('product_id') as string | null;
-  const platforms = (formData.get('platforms') as string).split(',').filter(Boolean);
-  const keywords = (formData.get('keywords') as string).split(',').map(k => k.trim()).filter(Boolean);
-  const negativeKeywords = (formData.get('negative_keywords') as string)?.split(',').map(k => k.trim()).filter(Boolean) || [];
-  const subreddits = (formData.get('subreddits') as string)?.split(',').map(k => k.trim()).filter(Boolean) || [];
-  const intentThreshold = (formData.get('intent_threshold') as string) || 'medium';
-  const autoRespond = formData.get('auto_respond') === 'true';
-  const responseTemplate = formData.get('response_template') as string | null;
+  let name: string;
+  let organizationId: string | null = null;
+  let productId: string | null = null;
+  let platforms: string[];
+  let keywords: string[];
+  let negativeKeywords: string[] = [];
+  let subreddits: string[] = [];
+  let intentThreshold = 'medium';
+  let autoRespond = false;
+  let responseTemplate: string | null = null;
+
+  if (input instanceof FormData) {
+    name = input.get('name') as string;
+    organizationId = input.get('organization_id') as string;
+    productId = input.get('product_id') as string | null;
+    platforms = (input.get('platforms') as string).split(',').filter(Boolean);
+    keywords = (input.get('keywords') as string).split(',').map(k => k.trim()).filter(Boolean);
+    negativeKeywords = (input.get('negative_keywords') as string)?.split(',').map(k => k.trim()).filter(Boolean) || [];
+    subreddits = (input.get('subreddits') as string)?.split(',').map(k => k.trim()).filter(Boolean) || [];
+    intentThreshold = (input.get('intent_threshold') as string) || 'medium';
+    autoRespond = input.get('auto_respond') === 'true';
+    responseTemplate = input.get('response_template') as string | null;
+  } else {
+    name = input.name;
+    organizationId = input.organizationId || null;
+    productId = input.productId || null;
+    platforms = input.platforms;
+    keywords = input.keywords;
+    negativeKeywords = input.negativeKeywords || [];
+    subreddits = input.subreddits || [];
+    intentThreshold = input.intentThreshold || 'medium';
+    autoRespond = input.autoRespond || false;
+    responseTemplate = input.responseTemplate || null;
+  }
+
+  // If no organization provided, get from user's membership
+  if (!organizationId) {
+    const { data: membership } = await supabase
+      .from('organization_members')
+      .select('organization_id')
+      .eq('user_id', user.id)
+      .limit(1)
+      .single();
+
+    if (!membership) {
+      return { success: false, error: 'No organization found' };
+    }
+    organizationId = membership.organization_id;
+  }
 
   const { data: config, error } = await supabase
     .from('social_listening_configs')
@@ -91,10 +147,12 @@ export async function createListeningConfig(formData: FormData) {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    return { success: false, error: error.message };
+  }
 
   revalidatePath('/dashboard/growth/listening');
-  return config;
+  return { success: true, data: config };
 }
 
 export async function updateListeningConfig(id: string, formData: FormData) {

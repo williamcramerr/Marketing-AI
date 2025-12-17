@@ -70,7 +70,7 @@ export const referralConversionHandler = inngest.createFunction(
 
     if (!isQualified.qualified) {
       // Schedule recheck if just needs more time
-      if (isQualified.daysNeeded) {
+      if ('daysNeeded' in isQualified && isQualified.daysNeeded) {
         await step.sleep('wait-for-qualification', `${isQualified.daysNeeded}d`);
 
         // Recheck
@@ -92,10 +92,10 @@ export const referralConversionHandler = inngest.createFunction(
               .update({ status: 'unqualified' })
               .eq('id', referralId);
           });
-          return { status: 'unqualified', reason: isQualified.reason };
+          return { status: 'unqualified', reason: 'reason' in isQualified ? isQualified.reason : 'Unknown' };
         }
       } else {
-        return { status: 'unqualified', reason: isQualified.reason };
+        return { status: 'unqualified', reason: 'reason' in isQualified ? isQualified.reason : 'Unknown' };
       }
     }
 

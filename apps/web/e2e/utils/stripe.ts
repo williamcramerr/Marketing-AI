@@ -88,7 +88,7 @@ export function createMockCheckoutSessionCompletedEvent(
         metadata: {
           organizationId,
         },
-      } as Stripe.Checkout.Session,
+      } as unknown as Stripe.Checkout.Session,
     },
     livemode: false,
     pending_webhooks: 1,
@@ -139,9 +139,9 @@ export function createMockSubscriptionCreatedEvent(
                   interval: 'month',
                   interval_count: 1,
                 },
-              } as Stripe.Price,
+              } as unknown as Stripe.Price,
               quantity: 1,
-            } as Stripe.SubscriptionItem,
+            } as unknown as Stripe.SubscriptionItem,
           ],
           has_more: false,
           total_count: 1,
@@ -152,7 +152,7 @@ export function createMockSubscriptionCreatedEvent(
         metadata: {
           organizationId,
         },
-      } as Stripe.Subscription,
+      } as unknown as Stripe.Subscription,
     },
     livemode: false,
     pending_webhooks: 1,
@@ -204,9 +204,9 @@ export function createMockSubscriptionUpdatedEvent(
                   interval: 'month',
                   interval_count: 1,
                 },
-              } as Stripe.Price,
+              } as unknown as Stripe.Price,
               quantity: 1,
-            } as Stripe.SubscriptionItem,
+            } as unknown as Stripe.SubscriptionItem,
           ],
           has_more: false,
           total_count: 1,
@@ -218,7 +218,7 @@ export function createMockSubscriptionUpdatedEvent(
         metadata: {
           organizationId,
         },
-      } as Stripe.Subscription,
+      } as unknown as Stripe.Subscription,
     },
     livemode: false,
     pending_webhooks: 1,
@@ -269,9 +269,9 @@ export function createMockSubscriptionDeletedEvent(
                   interval: 'month',
                   interval_count: 1,
                 },
-              } as Stripe.Price,
+              } as unknown as Stripe.Price,
               quantity: 1,
-            } as Stripe.SubscriptionItem,
+            } as unknown as Stripe.SubscriptionItem,
           ],
           has_more: false,
           total_count: 1,
@@ -284,7 +284,7 @@ export function createMockSubscriptionDeletedEvent(
         metadata: {
           organizationId,
         },
-      } as Stripe.Subscription,
+      } as unknown as Stripe.Subscription,
     },
     livemode: false,
     pending_webhooks: 1,
@@ -326,7 +326,7 @@ export function createMockInvoicePaidEvent(
         attempt_count: 1,
         next_payment_attempt: null,
         metadata: {},
-      } as Stripe.Invoice,
+      } as unknown as Stripe.Invoice,
     },
     livemode: false,
     pending_webhooks: 1,
@@ -369,7 +369,7 @@ export function createMockInvoicePaymentFailedEvent(
         attempt_count: attemptCount,
         next_payment_attempt: now + 86400, // 24 hours from now
         metadata: {},
-      } as Stripe.Invoice,
+      } as unknown as Stripe.Invoice,
     },
     livemode: false,
     pending_webhooks: 1,
@@ -415,9 +415,9 @@ export function createMockStripeSubscription(
               interval: 'month',
               interval_count: 1,
             },
-          } as Stripe.Price,
+          } as unknown as Stripe.Price,
           quantity: 1,
-        } as Stripe.SubscriptionItem,
+        } as unknown as Stripe.SubscriptionItem,
       ],
       has_more: false,
       total_count: 1,
@@ -434,7 +434,7 @@ export function createMockStripeSubscription(
     metadata: {
       organizationId,
     },
-  } as Stripe.Subscription;
+  } as unknown as Stripe.Subscription;
 }
 
 /**

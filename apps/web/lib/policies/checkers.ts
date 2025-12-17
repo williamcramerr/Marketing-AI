@@ -68,7 +68,7 @@ export async function checkRateLimit(
   task: TaskForValidation,
   context: ValidationContext
 ): Promise<PolicyCheckResult> {
-  const rule = policy.rule as RateLimitRule;
+  const rule = policy.rule as unknown as RateLimitRule;
   const { supabaseClient, organizationId } = context;
 
   // Determine time window
@@ -142,7 +142,7 @@ export async function checkBannedPhrases(
   task: TaskForValidation,
   context: ValidationContext
 ): Promise<PolicyCheckResult> {
-  const rule = policy.rule as BannedPhraseRule;
+  const rule = policy.rule as unknown as BannedPhraseRule;
   const content = getTaskContent(task, context.checkType);
 
   if (!content) {
@@ -197,7 +197,7 @@ export async function checkRequiredPhrases(
   task: TaskForValidation,
   context: ValidationContext
 ): Promise<PolicyCheckResult> {
-  const rule = policy.rule as RequiredPhraseRule;
+  const rule = policy.rule as unknown as RequiredPhraseRule;
   const content = getTaskContent(task, context.checkType);
 
   if (!content) {
@@ -256,7 +256,7 @@ export async function checkClaimLock(
   task: TaskForValidation,
   context: ValidationContext
 ): Promise<PolicyCheckResult> {
-  const rule = policy.rule as ClaimLockRule;
+  const rule = policy.rule as unknown as ClaimLockRule;
   const content = getTaskContent(task, context.checkType);
 
   if (!content || !rule.requireVerified) {
@@ -336,7 +336,7 @@ export async function checkDomainAllowlist(
   task: TaskForValidation,
   context: ValidationContext
 ): Promise<PolicyCheckResult> {
-  const rule = policy.rule as DomainAllowlistRule;
+  const rule = policy.rule as unknown as DomainAllowlistRule;
   const content = getTaskContent(task, context.checkType);
 
   if (!content) {
@@ -378,7 +378,7 @@ export async function checkSuppression(
   task: TaskForValidation,
   context: ValidationContext
 ): Promise<PolicyCheckResult> {
-  const rule = policy.rule as SuppressionRule;
+  const rule = policy.rule as unknown as SuppressionRule;
 
   // Extract email addresses from task input data
   const emails: string[] = [];
@@ -416,7 +416,7 @@ export async function checkTimeWindow(
   task: TaskForValidation,
   context: ValidationContext
 ): Promise<PolicyCheckResult> {
-  const rule = policy.rule as TimeWindowRule;
+  const rule = policy.rule as unknown as TimeWindowRule;
   const scheduledTime = new Date(task.scheduled_for);
 
   // Convert to specified timezone (simplified - in production use proper timezone library)
@@ -464,7 +464,7 @@ export async function checkBudgetLimit(
   task: TaskForValidation,
   context: ValidationContext
 ): Promise<PolicyCheckResult> {
-  const rule = policy.rule as BudgetLimitRule;
+  const rule = policy.rule as unknown as BudgetLimitRule;
   const { supabaseClient } = context;
 
   // Determine time window
@@ -520,7 +520,7 @@ export async function checkBudgetLimit(
       .eq('product_id', campaign.product_id);
 
     if (productCampaigns && productCampaigns.length > 0) {
-      const campaignIds = productCampaigns.map((c) => c.id);
+      const campaignIds = productCampaigns.map((c: { id: string }) => c.id);
       query = query.in('campaign_id', campaignIds);
     }
   }
@@ -588,7 +588,7 @@ export async function checkContentRule(
   task: TaskForValidation,
   context: ValidationContext
 ): Promise<PolicyCheckResult> {
-  const rule = policy.rule as ContentRule;
+  const rule = policy.rule as unknown as ContentRule;
   const content = getTaskContent(task, context.checkType);
 
   if (!content) {

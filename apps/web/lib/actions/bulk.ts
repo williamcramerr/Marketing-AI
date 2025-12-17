@@ -343,18 +343,21 @@ export async function exportTasksToCSV(taskIds: string[]): Promise<{
     'Scheduled For',
   ];
 
-  const rows = tasks.map((task) => [
-    task.id,
-    `"${(task.title || '').replace(/"/g, '""')}"`,
-    `"${(task.description || '').replace(/"/g, '""')}"`,
-    task.type,
-    task.status,
-    task.priority,
-    task.campaigns?.name || '',
-    task.created_at,
-    task.updated_at,
-    task.scheduled_for || '',
-  ]);
+  const rows = tasks.map((task) => {
+    const campaign = Array.isArray(task.campaigns) ? task.campaigns[0] : task.campaigns;
+    return [
+      task.id,
+      `"${(task.title || '').replace(/"/g, '""')}"`,
+      `"${(task.description || '').replace(/"/g, '""')}"`,
+      task.type,
+      task.status,
+      task.priority,
+      campaign?.name || '',
+      task.created_at,
+      task.updated_at,
+      task.scheduled_for || '',
+    ];
+  });
 
   const csv = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
 
@@ -407,16 +410,19 @@ export async function exportAssetsToCSV(assetIds: string[]): Promise<{
     'Updated At',
   ];
 
-  const rows = assets.map((asset) => [
-    asset.id,
-    `"${(asset.title || '').replace(/"/g, '""')}"`,
-    asset.type,
-    asset.published ? 'Yes' : 'No',
-    asset.version,
-    asset.products?.name || '',
-    asset.created_at,
-    asset.updated_at,
-  ]);
+  const rows = assets.map((asset) => {
+    const product = Array.isArray(asset.products) ? asset.products[0] : asset.products;
+    return [
+      asset.id,
+      `"${(asset.title || '').replace(/"/g, '""')}"`,
+      asset.type,
+      asset.published ? 'Yes' : 'No',
+      asset.version,
+      product?.name || '',
+      asset.created_at,
+      asset.updated_at,
+    ];
+  });
 
   const csv = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
 

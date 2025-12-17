@@ -159,10 +159,10 @@ export const nurtureEmailDueHandler = inngest.createFunction(
 
     // If send_on_days is configured, check if today is valid
     if (sequence?.send_on_days?.length > 0) {
-      const today = new Date().toLocaleDateString('en-US', { weekday: 'lowercase' });
-      if (!sequence.send_on_days.includes(today)) {
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+      if (!sequence?.send_on_days?.includes(today)) {
         // Reschedule for next valid day
-        const nextValidDay = getNextValidDay(sequence.send_on_days);
+        const nextValidDay = getNextValidDay(sequence!.send_on_days!);
         await step.sendEvent('reschedule-email', {
           name: 'nurture/email-due',
           data: { leadId, sequenceId, emailId, organizationId },

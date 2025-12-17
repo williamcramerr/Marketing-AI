@@ -10,7 +10,10 @@ export type ConnectorType =
   | 'cms'
   | 'social'
   | 'analytics'
-  | 'advertising';
+  | 'advertising'
+  | 'seo'
+  | 'visitor_identification'
+  | 'social_listening';
 
 export type ConnectorStatus =
   | 'active'

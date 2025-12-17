@@ -71,7 +71,15 @@ export const socialListeningScan = inngest.createFunction(
               if (creds?.credentials?.bearer_token) {
                 connector = new TwitterSearchConnector({
                   id: `twitter-${config.id}`,
-                  bearerToken: creds.credentials.bearer_token,
+                  organizationId: config.organization_id,
+                  type: 'social_listening',
+                  name: 'Twitter Search',
+                  credentials: {
+                    bearerToken: creds.credentials.bearer_token,
+                  },
+                  config: {},
+                  active: true,
+                  rateLimit: { perHour: 100, perDay: 1000 },
                 });
               }
             } else if (platform === 'reddit') {
@@ -129,7 +137,7 @@ export const socialListeningScan = inngest.createFunction(
 
         const existingIds = new Set(existing?.map(e => e.external_id) || []);
         return configConversations.filter(c => !existingIds.has(c.externalId));
-      });
+      }) as unknown as DiscoveredConversation[];
 
       if (newConversations.length === 0) continue;
 
@@ -139,8 +147,9 @@ export const socialListeningScan = inngest.createFunction(
           name: config.products?.name || 'Unknown Product',
           description: config.products?.description || '',
           positioning: config.products?.positioning || '',
-          industry: '',
-          targetAudience: '',
+          verifiedClaims: [],
+          features: [],
+          benefits: [],
         };
 
         const analyses = await batchAnalyzeConversations(
@@ -150,12 +159,13 @@ export const socialListeningScan = inngest.createFunction(
             parentContent: c.parentContent,
             authorUsername: c.authorUsername,
           })),
-          productContext
+          productContext,
+          config.keywords || []
         );
 
         return newConversations.map((conv, i) => ({
           conversation: conv,
-          analysis: analyses[i],
+          analysis: analyses.get(`${conv.platform}_${i}`)!,
         }));
       });
 
@@ -181,7 +191,7 @@ export const socialListeningScan = inngest.createFunction(
           author_username: conversation.authorUsername,
           author_profile_url: conversation.authorProfileUrl,
           content: conversation.content,
-          content_url: conversation.contentUrl,
+          content_url: conversation.externalUrl,
           parent_content: conversation.parentContent,
           intent_score: analysis.intentScore,
           intent_level: analysis.intentLevel,
@@ -189,12 +199,12 @@ export const socialListeningScan = inngest.createFunction(
           relevance_score: analysis.relevanceScore,
           ai_analysis: {
             reasoning: analysis.reasoning,
-            keyTopics: analysis.keyTopics,
+            topics: analysis.topics,
             responseApproach: analysis.responseApproach,
           },
           suggested_response: analysis.suggestedResponse,
           status: 'new',
-          discovered_at: conversation.timestamp,
+          discovered_at: conversation.publishedAt,
         }));
 
         const { error } = await supabase
@@ -290,33 +300,30 @@ export const conversationFoundHandler = inngest.createFunction(
     // Generate AI response if not already suggested
     if (!data.suggested_response && config.products) {
       await step.run('generate-response', async () => {
-        const response = await generateResponse(
-          {
+        const response = await generateResponse({
+          conversation: {
             platform: data.platform,
             content: data.content,
             parentContent: data.parent_content,
             authorUsername: data.author_username,
-            opportunityType: data.opportunity_type,
-            analysis: data.ai_analysis,
           },
-          {
+          product: {
             name: config.products.name,
-            description: config.products.description,
-            positioning: config.products.positioning,
-            industry: '',
-            targetAudience: '',
+            description: config.products.description || '',
+            positioning: config.products.positioning || '',
+            verifiedClaims: [],
+            features: [],
+            benefits: [],
           },
-          {
-            tone: 'helpful',
-            maxLength: platform === 'twitter' ? 280 : 500,
-            includeProductMention: data.opportunity_type === 'recommendation_request',
-            template: config.response_template,
-          }
-        );
+          analysis: data.ai_analysis as any,
+          tone: 'helpful',
+          maxLength: data.platform === 'twitter' ? 280 : 500,
+          responseGuidelines: config.response_template,
+        });
 
         await supabase
           .from('social_conversations')
-          .update({ suggested_response: response.response })
+          .update({ suggested_response: response.content })
           .eq('id', data.id);
       });
     }

@@ -27,12 +27,12 @@ export const paginationSchema = z.object({
     .string()
     .optional()
     .transform((val) => (val ? parseInt(val, 10) : 50))
-    .pipe(z.number().min(1).max(100).default(50)),
+    .pipe(z.number().min(1).max(100)),
   offset: z
     .string()
     .optional()
     .transform((val) => (val ? parseInt(val, 10) : 0))
-    .pipe(z.number().min(0).default(0)),
+    .pipe(z.number().min(0)),
 });
 
 /**
@@ -135,7 +135,7 @@ export const booleanStringSchema = z
 /**
  * JSON object schema (for arbitrary JSON data)
  */
-export const jsonObjectSchema = z.record(z.unknown()).default({});
+export const jsonObjectSchema = z.record(z.string(), z.unknown()).default({});
 
 /**
  * Sort direction schema

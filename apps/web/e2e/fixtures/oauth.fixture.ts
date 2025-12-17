@@ -147,12 +147,12 @@ export async function createTestOAuthConnection(
       user_id: userId,
       provider,
       provider_account_id: accountId,
-      provider_account_name: MOCK_OAUTH_RESPONSES[provider].userInfo.name || 'Test User',
-      provider_account_email: MOCK_OAUTH_RESPONSES[provider].userInfo.email || 'test@example.com',
+      provider_account_name: (MOCK_OAUTH_RESPONSES[provider].userInfo as any).name || (MOCK_OAUTH_RESPONSES[provider].userInfo as any).data?.name || 'Test User',
+      provider_account_email: (MOCK_OAUTH_RESPONSES[provider].userInfo as any).email || 'test@example.com',
       access_token_secret_id: accessTokenSecretId,
       refresh_token_secret_id: provider !== 'meta' ? refreshTokenSecretId : null,
       token_expires_at: new Date(Date.now() + 3600000).toISOString(), // 1 hour from now
-      scopes: MOCK_OAUTH_RESPONSES[provider].tokenResponse.scope?.split(' ') || [],
+      scopes: (MOCK_OAUTH_RESPONSES[provider].tokenResponse as any).scope?.split(' ') || [],
       active: true,
       last_error: null,
     })

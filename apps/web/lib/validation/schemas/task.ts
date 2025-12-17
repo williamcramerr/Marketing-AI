@@ -39,9 +39,7 @@ export type TaskType = (typeof TASK_TYPES)[number];
  * Task type schema
  */
 export const taskTypeSchema = z.enum(TASK_TYPES, {
-  errorMap: () => ({
-    message: `Invalid task type. Must be one of: ${TASK_TYPES.join(', ')}`,
-  }),
+  message: `Invalid task type. Must be one of: ${TASK_TYPES.join(', ')}`,
 });
 
 /**
@@ -64,9 +62,7 @@ export type TaskStatus = (typeof TASK_STATUSES)[number];
  * Task status schema
  */
 export const taskStatusSchema = z.enum(TASK_STATUSES, {
-  errorMap: () => ({
-    message: `Invalid task status. Must be one of: ${TASK_STATUSES.join(', ')}`,
-  }),
+  message: `Invalid task status. Must be one of: ${TASK_STATUSES.join(', ')}`,
 });
 
 /**

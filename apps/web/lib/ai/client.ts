@@ -73,9 +73,9 @@ export const TEMPERATURE_PRESETS = {
 /**
  * Helper function to create message parameters with custom overrides
  */
-export function createMessageParams(
-  overrides?: Partial<typeof DEFAULT_MESSAGE_PARAMS>
-) {
+export function createMessageParams<T extends { messages: Anthropic.MessageParam[]; system?: string; temperature?: number }>(
+  overrides: T
+): typeof DEFAULT_MESSAGE_PARAMS & T {
   return {
     ...DEFAULT_MESSAGE_PARAMS,
     ...overrides,
@@ -90,7 +90,6 @@ export function handleAnthropicError(error: unknown): never {
     console.error('Anthropic API Error:', {
       status: error.status,
       message: error.message,
-      type: error.type,
     });
 
     // Provide user-friendly error messages

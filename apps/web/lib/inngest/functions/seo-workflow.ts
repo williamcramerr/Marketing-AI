@@ -51,11 +51,16 @@ export const keywordResearchHandler = inngest.createFunction(
       return { status: 'no_api_key', keywordId };
     }
 
-    const serpApi = new SerpApiConnector({ apiKey: credentials.api_key });
+    const serpApi = new SerpApiConnector({
+      type: 'seo',
+      credentials: { apiKey: credentials.api_key },
+      config: {},
+    } as any);
 
     // Get keyword data
     const keywordData = await step.run('fetch-keyword-data', async () => {
-      const result = await serpApi.search(keyword, {
+      const result = await serpApi.search({
+        keyword,
         location: product.organizations?.settings?.default_location || 'United States',
       });
 
@@ -64,7 +69,7 @@ export const keywordResearchHandler = inngest.createFunction(
 
     // Analyze SERP results
     const serpAnalysis = await step.run('analyze-serp', async () => {
-      const analysis = await serpApi.analyzeSERP(keyword, keywordData.organicResults);
+      const analysis = await serpApi.analyzeSERP(keyword);
       return analysis;
     });
 
@@ -75,19 +80,19 @@ export const keywordResearchHandler = inngest.createFunction(
     });
 
     // Update keyword record
+    // Note: SerpApi doesn't provide search volume/difficulty directly from SERP results
+    // These would need to come from a keyword research API or be estimated
     await step.run('update-keyword', async () => {
       await supabase
         .from('keyword_research')
         .update({
-          search_volume: keywordData.searchVolume,
-          keyword_difficulty: keywordData.difficulty,
-          cpc_cents: keywordData.cpcCents,
-          intent: keywordData.intent,
+          search_volume: keywordData.search_information?.total_results || null,
           related_keywords: relatedKeywords,
           source: 'serpapi',
           source_data: {
             fetched_at: new Date().toISOString(),
             location: product.organizations?.settings?.default_location || 'United States',
+            total_results: keywordData.search_information?.total_results,
           },
         })
         .eq('id', keywordId);
@@ -97,12 +102,11 @@ export const keywordResearchHandler = inngest.createFunction(
     await step.run('save-serp-analysis', async () => {
       await supabase.from('serp_analysis').upsert({
         keyword_id: keywordId,
-        top_results: serpAnalysis.topResults?.slice(0, 10) || [],
+        top_results: serpAnalysis.organicResults?.slice(0, 10) || [],
         featured_snippet: serpAnalysis.featuredSnippet,
-        people_also_ask: serpAnalysis.peopleAlsoAsk || [],
+        people_also_ask: serpAnalysis.relatedQuestions || [],
         related_searches: serpAnalysis.relatedSearches || [],
         avg_word_count: serpAnalysis.avgWordCount,
-        avg_domain_authority: serpAnalysis.avgDomainAuthority,
         analyzed_at: new Date().toISOString(),
       });
     });
@@ -110,8 +114,7 @@ export const keywordResearchHandler = inngest.createFunction(
     return {
       status: 'completed',
       keywordId,
-      searchVolume: keywordData.searchVolume,
-      difficulty: keywordData.difficulty,
+      totalResults: keywordData.search_information?.total_results,
     };
   }
 );
@@ -167,27 +170,32 @@ export const briefGeneratedHandler = inngest.createFunction(
         name: data.product.name,
         description: data.product.description || '',
         positioning: data.product.positioning || '',
-        industry: data.product.organizations?.industry || '',
-        targetAudience: data.product.target_audience || '',
+        verifiedClaims: data.product.verified_claims || [],
+        features: data.product.features || [],
+        benefits: data.product.benefits || [],
       };
 
-      const brief = await generateContentBrief(
-        {
-          keyword: data.keyword.keyword,
-          searchVolume: data.keyword.search_volume,
-          difficulty: data.keyword.keyword_difficulty,
-          intent: data.keyword.intent,
-        },
-        serpAnalysis
-          ? {
-              topResults: serpAnalysis.top_results,
-              featuredSnippet: serpAnalysis.featured_snippet,
-              peopleAlsoAsk: serpAnalysis.people_also_ask,
-              avgWordCount: serpAnalysis.avg_word_count,
-            }
-          : undefined,
-        productContext
-      );
+      // Transform database SERP analysis to match SerpAnalysis interface
+      const transformedSerpAnalysis = serpAnalysis
+        ? {
+            keyword: data.keyword.keyword,
+            organicResults: serpAnalysis.top_results || [],
+            relatedQuestions: serpAnalysis.people_also_ask || [],
+            relatedSearches: serpAnalysis.related_searches || [],
+            featuredSnippet: serpAnalysis.featured_snippet,
+            hasLocalPack: false,
+            hasKnowledgePanel: false,
+            hasAds: false,
+            avgWordCount: serpAnalysis.avg_word_count,
+            topDomains: [],
+          }
+        : undefined;
+
+      const brief = await generateContentBrief({
+        keyword: data.keyword.keyword,
+        serpAnalysis: transformedSerpAnalysis,
+        product: productContext,
+      });
 
       return brief;
     });
@@ -202,12 +210,11 @@ export const briefGeneratedHandler = inngest.createFunction(
           suggested_word_count: generatedBrief.suggestedWordCount,
           suggested_headings: generatedBrief.suggestedHeadings,
           outline: generatedBrief.outline,
-          meta_description_suggestion: generatedBrief.metaDescription,
+          meta_description_suggestion: generatedBrief.metaDescriptionSuggestion,
           questions_to_answer: generatedBrief.questionsToAnswer,
           serp_analysis: {
-            summary: generatedBrief.competitorInsights,
-            content_gaps: generatedBrief.contentGaps,
-            unique_angles: generatedBrief.uniqueAngles,
+            content_gaps: generatedBrief.competitorGaps,
+            unique_angle: generatedBrief.uniqueAngle,
           },
           status: 'draft',
         })
@@ -266,7 +273,7 @@ export const seoRankTracking = inngest.createFunction(
     let totalChecked = 0;
     let totalImproved = 0;
 
-    for (const [orgId, orgRankings] of Object.entries(byOrg)) {
+    for (const [orgId, orgRankings] of Object.entries(byOrg) as [string, typeof rankings][]) {
       await step.run(`check-rankings-${orgId}`, async () => {
         // Get SerpApi credentials
         const { data: creds } = await supabase
@@ -279,11 +286,18 @@ export const seoRankTracking = inngest.createFunction(
 
         if (!creds?.credentials?.api_key) return;
 
-        const serpApi = new SerpApiConnector({ apiKey: creds.credentials.api_key });
+        const serpApi = new SerpApiConnector({
+          type: 'seo',
+          credentials: { apiKey: creds.credentials.api_key },
+          config: {},
+        } as any);
 
         for (const ranking of orgRankings) {
           try {
-            const result = await serpApi.checkRanking(ranking.tracked_url, ranking.tracked_keyword);
+            const result = await serpApi.checkRanking({
+              keyword: ranking.tracked_keyword,
+              url: ranking.tracked_url,
+            });
             const newPosition = result.position || 101; // 101 = not found
 
             // Update ranking
