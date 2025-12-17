@@ -8,21 +8,35 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 
-// Validate that the API key is present
-if (!process.env.ANTHROPIC_API_KEY) {
-  throw new Error(
-    'Missing ANTHROPIC_API_KEY environment variable. Please add it to your .env.local file.'
-  );
-}
+let _anthropic: Anthropic | null = null;
 
 /**
- * Configured Anthropic client instance
+ * Get the Anthropic client instance (lazily initialized)
  *
  * Uses Claude 3.5 Sonnet by default for all content generation tasks.
  * This model provides an excellent balance of quality, speed, and cost.
  */
-export const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+function getAnthropicClient(): Anthropic {
+  if (!_anthropic) {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      throw new Error(
+        'Missing ANTHROPIC_API_KEY environment variable. Please add it to your .env.local file.'
+      );
+    }
+    _anthropic = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
+  }
+  return _anthropic;
+}
+
+/**
+ * Configured Anthropic client instance (lazy proxy)
+ */
+export const anthropic = new Proxy({} as Anthropic, {
+  get(_, prop) {
+    return getAnthropicClient()[prop as keyof Anthropic];
+  },
 });
 
 /**
