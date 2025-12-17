@@ -1,0 +1,263 @@
+{
+  "minimal": {
+    "name": "QuickApp",
+    "description": "Simple task manager",
+    "positioning": "Fast and easy task management",
+    "verifiedClaims": ["Used by 1,000+ users"],
+    "features": ["Task lists", "Due dates"],
+    "benefits": ["Stay organized"]
+  },
+  "saas_extensive": {
+    "name": "CloudFlow Analytics Pro",
+    "description": "CloudFlow Analytics Pro is an enterprise-grade business intelligence and data analytics platform that empowers organizations to transform raw data into actionable insights. With advanced machine learning capabilities, real-time data processing, and intuitive visualization tools, CloudFlow helps teams make data-driven decisions faster and more confidently. Our platform integrates seamlessly with over 200 data sources including databases, cloud services, CRM systems, and marketing tools. Built for scale and security, CloudFlow handles billions of data points while maintaining enterprise-grade compliance with SOC2, GDPR, and HIPAA standards. Whether you're a startup or Fortune 500 company, CloudFlow adapts to your needs with flexible deployment options and customizable dashboards that grow with your business. Our AI-powered insights engine automatically detects trends, anomalies, and opportunities, delivering proactive recommendations directly to decision-makers.",
+    "positioning": "The most comprehensive business intelligence platform for data-driven organizations seeking competitive advantage through advanced analytics and AI-powered insights",
+    "brandGuidelines": {
+      "tone": "Professional, authoritative, yet approachable",
+      "voice": "Expert, confident, and forward-thinking",
+      "keywords": ["data-driven", "insights", "analytics", "intelligence", "enterprise-grade", "scalable", "AI-powered"],
+      "avoidWords": ["cheap", "basic", "simple", "easy"]
+    },
+    "verifiedClaims": [
+      "Processes over 10 billion data points daily across our customer base",
+      "Reduces report generation time by 75% on average",
+      "Integrates with 200+ data sources out of the box",
+      "Trusted by 15,000+ companies worldwide",
+      "99.99% uptime SLA guarantee",
+      "SOC2 Type II, GDPR, and HIPAA compliant",
+      "Named Leader in Gartner Magic Quadrant for Analytics 2024",
+      "Average ROI of 340% within first year (based on Forrester TEI study)"
+    ],
+    "features": [
+      "Real-time data streaming and processing",
+      "AI-powered predictive analytics and forecasting",
+      "Customizable drag-and-drop dashboard builder",
+      "Advanced SQL and natural language query interfaces",
+      "Automated anomaly detection and alerting",
+      "Role-based access control and data governance",
+      "White-label and embedded analytics options",
+      "Mobile apps for iOS and Android",
+      "Collaborative workspace with commenting and sharing",
+      "Version control and audit trails for all reports",
+      "API-first architecture with extensive developer tools",
+      "Pre-built connectors for major platforms (Salesforce, HubSpot, Google Analytics, etc.)"
+    ],
+    "benefits": [
+      "Make faster, more confident business decisions with real-time insights",
+      "Reduce time spent on manual reporting by up to 80%",
+      "Uncover hidden opportunities and risks with AI-powered analytics",
+      "Democratize data access across your entire organization",
+      "Scale seamlessly from startup to enterprise without platform migration",
+      "Ensure data security and compliance with industry standards",
+      "Improve collaboration between technical and business teams",
+      "Reduce total cost of ownership compared to building in-house solutions"
+    ]
+  },
+  "ecommerce": {
+    "name": "StyleBox",
+    "description": "Monthly subscription box delivering curated fashion accessories based on your personal style quiz",
+    "positioning": "Discover your perfect style with personalized fashion curation",
+    "brandGuidelines": {
+      "tone": "Friendly, enthusiastic, and empowering",
+      "voice": "Trendy, supportive, and inclusive",
+      "keywords": ["personalized", "curated", "style", "confidence", "discover"],
+      "avoidWords": ["cheap", "mass-market", "generic"]
+    },
+    "verifiedClaims": [
+      "Over 500,000 boxes delivered since launch",
+      "98% customer satisfaction rating",
+      "Featured in Vogue, Elle, and InStyle magazines",
+      "Partner with 50+ independent designers",
+      "Free shipping and returns on all boxes"
+    ],
+    "features": [
+      "Personalized style quiz with AI recommendations",
+      "5-7 curated items per box",
+      "Flexible subscription options (monthly, quarterly, annual)",
+      "Style profile that learns from your feedback",
+      "Exclusive member discounts on full-size items",
+      "Access to members-only shopping platform"
+    ],
+    "benefits": [
+      "Save 10+ hours per month on shopping",
+      "Discover new brands you'll love",
+      "Build confidence with professional styling",
+      "Try before you buy with easy returns",
+      "Support independent designers"
+    ]
+  },
+  "b2b_software": {
+    "name": "TeamSync",
+    "description": "All-in-one project management and team collaboration platform for distributed teams",
+    "positioning": "Work together, anywhere - the collaboration hub built for remote teams",
+    "brandGuidelines": {
+      "tone": "Professional but warm, productivity-focused",
+      "voice": "Clear, helpful, and pragmatic",
+      "keywords": ["collaboration", "productivity", "remote", "seamless", "unified"],
+      "avoidWords": []
+    },
+    "verifiedClaims": [
+      "Used by 50,000+ teams across 120 countries",
+      "Increases team productivity by 35% on average",
+      "4.8/5 star rating on G2 and Capterra",
+      "99.9% uptime over the past 12 months",
+      "ISO 27001 and SOC 2 Type II certified"
+    ],
+    "features": [
+      "Project boards with kanban, list, and timeline views",
+      "Video conferencing with screen sharing",
+      "Real-time document collaboration",
+      "Time tracking and resource management",
+      "Integrations with 100+ tools (Slack, GitHub, Google Workspace)",
+      "Custom workflows and automation",
+      "Mobile apps for iOS and Android"
+    ],
+    "benefits": [
+      "Reduce context switching with everything in one place",
+      "Eliminate miscommunication across distributed teams",
+      "Keep projects on track with clear visibility",
+      "Onboard new team members 50% faster",
+      "Save $2,000+ per employee annually on tool costs"
+    ]
+  },
+  "consumer_app": {
+    "name": "FitQuest",
+    "description": "Gamified fitness app that turns your workouts into epic adventures",
+    "positioning": "Transform fitness into your favorite RPG game",
+    "brandGuidelines": {
+      "tone": "Energetic, motivating, and fun",
+      "voice": "Playful, encouraging, and community-oriented",
+      "keywords": ["adventure", "level up", "achievement", "community", "transformation"],
+      "avoidWords": ["boring", "punishment", "guilt"]
+    },
+    "verifiedClaims": [
+      "2 million+ active users worldwide",
+      "Users exercise 3x more frequently than average",
+      "App Store Editor's Choice Award 2024",
+      "Featured by Apple Fitness+",
+      "Average user loses 15 pounds in first 90 days"
+    ],
+    "features": [
+      "Choose your character and embark on storyline quests",
+      "Earn XP and level up through real-world workouts",
+      "Unlock equipment, abilities, and achievements",
+      "Join guilds and compete in team challenges",
+      "AI personal trainer adapts to your fitness level",
+      "Works with Apple Health, Google Fit, and fitness trackers",
+      "Hundreds of workout types (running, cycling, yoga, strength training)"
+    ],
+    "benefits": [
+      "Make exercise addictively fun",
+      "Stay motivated with clear progression",
+      "Build accountability through community",
+      "See real results while playing",
+      "Work out anywhere, anytime"
+    ]
+  },
+  "fintech": {
+    "name": "WealthWise",
+    "description": "AI-powered investment platform democratizing wealth management for everyone",
+    "positioning": "Professional investment management, accessible to all",
+    "brandGuidelines": {
+      "tone": "Trustworthy, educational, and empowering",
+      "voice": "Expert yet accessible, transparent, and supportive",
+      "keywords": ["intelligent", "transparent", "secure", "growth", "personalized"],
+      "avoidWords": ["risky", "gambling", "get rich quick"]
+    },
+    "verifiedClaims": [
+      "Manages $5 billion in client assets",
+      "SEC-registered investment advisor",
+      "Bank-level security with 256-bit encryption",
+      "Average portfolio return of 8.2% annually (past 5 years)",
+      "Featured in Wall Street Journal and Forbes",
+      "No account minimums or hidden fees"
+    ],
+    "features": [
+      "Personalized portfolio based on goals and risk tolerance",
+      "Automated rebalancing and tax-loss harvesting",
+      "Fractional shares for diversification with any amount",
+      "Educational resources and investment guides",
+      "24/7 customer support from financial advisors",
+      "Real-time portfolio tracking and insights",
+      "Socially responsible investing options"
+    ],
+    "benefits": [
+      "Grow wealth without expensive advisor fees",
+      "Invest confidently with expert-built portfolios",
+      "Save thousands in taxes annually",
+      "Start investing with as little as $1",
+      "Understand every investment decision"
+    ]
+  },
+  "education_tech": {
+    "name": "CodeCraft Academy",
+    "description": "Interactive coding bootcamp teaching full-stack development through real-world projects",
+    "positioning": "Learn to code by building actual products, not just tutorials",
+    "brandGuidelines": {
+      "tone": "Educational, encouraging, and practical",
+      "voice": "Mentor-like, patient, and results-oriented",
+      "keywords": ["practical", "hands-on", "career-ready", "mentorship", "transform"],
+      "avoidWords": ["easy", "simple", "quick"]
+    },
+    "verifiedClaims": [
+      "93% of graduates employed within 6 months",
+      "Average salary increase of $35,000 for career changers",
+      "10,000+ alumni working at top tech companies",
+      "Rated 4.9/5 by Course Report",
+      "Job guarantee or tuition refund",
+      "Income Share Agreement options available"
+    ],
+    "features": [
+      "12-week intensive or 24-week part-time programs",
+      "1-on-1 mentorship with senior developers",
+      "Build 5+ portfolio projects",
+      "Live coding sessions and pair programming",
+      "Career coaching and interview preparation",
+      "Lifetime access to course materials and community",
+      "Cutting-edge curriculum updated quarterly"
+    ],
+    "benefits": [
+      "Launch a tech career in 3-6 months",
+      "Learn from developers at Google, Meta, and Amazon",
+      "Build real projects for your portfolio",
+      "Get hired or get your money back",
+      "Join a supportive community of developers"
+    ]
+  },
+  "healthcare_saas": {
+    "name": "MediSchedule",
+    "description": "HIPAA-compliant patient scheduling and practice management software for healthcare providers",
+    "positioning": "Streamline your practice, focus on patient care",
+    "brandGuidelines": {
+      "tone": "Professional, reliable, and efficient",
+      "voice": "Healthcare-focused, compliant, and practical",
+      "keywords": ["compliant", "efficient", "reliable", "streamlined", "secure"],
+      "avoidWords": ["complicated", "experimental"]
+    },
+    "verifiedClaims": [
+      "HIPAA and HITECH compliant with BAA",
+      "Used by 8,500+ healthcare practices",
+      "Reduces no-shows by 45% on average",
+      "Saves 15 hours per week in administrative time",
+      "99.99% uptime SLA",
+      "Certified for EHR integration with Epic, Cerner, and Athenahealth"
+    ],
+    "features": [
+      "Online booking with real-time availability",
+      "Automated appointment reminders via SMS and email",
+      "Waitlist management and automatic filling",
+      "Patient intake forms and digital signatures",
+      "Insurance verification and billing integration",
+      "Telehealth capabilities built-in",
+      "Multi-location and multi-provider support",
+      "Customizable booking rules and workflows"
+    ],
+    "benefits": [
+      "Fill more appointment slots automatically",
+      "Reduce front desk workload by 60%",
+      "Improve patient satisfaction with online booking",
+      "Decrease no-show rates significantly",
+      "Ensure compliance without extra effort",
+      "Scale across multiple locations seamlessly"
+    ]
+  }
+}

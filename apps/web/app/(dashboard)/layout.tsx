@@ -1,0 +1,43 @@
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
+import { DashboardNav } from '@/components/dashboard/nav';
+import { DashboardHeader } from '@/components/dashboard/header';
+
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
+  // Get user's organizations
+  const { data: memberships } = await supabase
+    .from('organization_members')
+    .select('organization_id, role, organizations(id, name, slug)')
+    .eq('user_id', user.id);
+
+  const organizations = memberships?.map((m) => ({
+    id: m.organizations?.id,
+    name: m.organizations?.name,
+    slug: m.organizations?.slug,
+    role: m.role,
+  })).filter(Boolean) || [];
+
+  return (
+    <div className="flex min-h-screen">
+      <DashboardNav organizations={organizations} />
+      <div className="flex flex-1 flex-col">
+        <DashboardHeader user={user} organizations={organizations} />
+        <main className="flex-1 overflow-y-auto bg-muted/30 p-6">{children}</main>
+      </div>
+    </div>
+  );
+}

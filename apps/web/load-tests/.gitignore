@@ -1,0 +1,19 @@
+# Environment files
+.env
+.env.local
+
+# Test results
+results/*.json
+results/*.html
+results/*.csv
+!results/.gitkeep
+
+# k6 cloud results
+.k6cloud/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
