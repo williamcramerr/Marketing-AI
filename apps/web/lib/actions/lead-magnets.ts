@@ -68,19 +68,81 @@ export async function getLeadMagnetBySlug(organizationId: string, slug: string) 
   return magnet;
 }
 
-export async function createLeadMagnet(formData: FormData) {
+interface CreateLeadMagnetInput {
+  title: string;
+  slug: string;
+  description?: string;
+  magnetType: string;
+  fileUrl?: string;
+  externalUrl?: string;
+  landingPageTemplate?: string;
+  landingPageConfig?: Record<string, unknown>;
+  organizationId?: string;
+  productId?: string;
+}
+
+export async function createLeadMagnet(input: FormData | CreateLeadMagnetInput): Promise<{
+  success: boolean;
+  data?: Record<string, unknown>;
+  error?: string;
+}> {
   const supabase = await createClient();
 
-  const organizationId = formData.get('organization_id') as string;
-  const productId = formData.get('product_id') as string | null;
-  const title = formData.get('title') as string;
-  const slug = formData.get('slug') as string;
-  const description = formData.get('description') as string;
-  const magnetType = formData.get('magnet_type') as string;
-  const filePath = formData.get('file_path') as string | null;
-  const externalUrl = formData.get('external_url') as string | null;
-  const landingPageTemplate = formData.get('landing_page_template') as string;
-  const landingPageConfig = formData.get('landing_page_config') as string;
+  let organizationId: string | null = null;
+  let productId: string | null = null;
+  let title: string;
+  let slug: string;
+  let description: string | null = null;
+  let magnetType: string;
+  let filePath: string | null = null;
+  let externalUrl: string | null = null;
+  let landingPageTemplate: string = 'standard';
+  let landingPageConfig: Record<string, unknown> = {};
+
+  if (input instanceof FormData) {
+    organizationId = input.get('organization_id') as string;
+    productId = input.get('product_id') as string | null;
+    title = input.get('title') as string;
+    slug = input.get('slug') as string;
+    description = input.get('description') as string;
+    magnetType = input.get('magnet_type') as string;
+    filePath = input.get('file_path') as string | null;
+    externalUrl = input.get('external_url') as string | null;
+    landingPageTemplate = (input.get('landing_page_template') as string) || 'standard';
+    const configStr = input.get('landing_page_config') as string;
+    landingPageConfig = configStr ? JSON.parse(configStr) : {};
+  } else {
+    title = input.title;
+    slug = input.slug;
+    description = input.description || null;
+    magnetType = input.magnetType;
+    filePath = input.fileUrl || null;
+    externalUrl = input.externalUrl || null;
+    landingPageTemplate = input.landingPageTemplate || 'standard';
+    landingPageConfig = input.landingPageConfig || {};
+    organizationId = input.organizationId || null;
+    productId = input.productId || null;
+  }
+
+  // If no organization provided, get from user's membership
+  if (!organizationId) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    const { data: membership } = await supabase
+      .from('organization_members')
+      .select('organization_id')
+      .eq('user_id', user.id)
+      .limit(1)
+      .single();
+
+    if (!membership) {
+      return { success: false, error: 'No organization found' };
+    }
+    organizationId = membership.organization_id;
+  }
 
   const { data: magnet, error } = await supabase
     .from('lead_magnets')
@@ -93,17 +155,19 @@ export async function createLeadMagnet(formData: FormData) {
       magnet_type: magnetType,
       file_path: filePath,
       external_url: externalUrl,
-      landing_page_template: landingPageTemplate || 'standard',
-      landing_page_config: landingPageConfig ? JSON.parse(landingPageConfig) : {},
+      landing_page_template: landingPageTemplate,
+      landing_page_config: landingPageConfig,
       active: true,
     })
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    return { success: false, error: error.message };
+  }
 
   revalidatePath('/dashboard/growth/leads');
-  return magnet;
+  return { success: true, data: magnet };
 }
 
 export async function updateLeadMagnet(id: string, formData: FormData) {
