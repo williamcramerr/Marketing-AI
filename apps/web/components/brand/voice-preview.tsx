@@ -62,7 +62,7 @@ function generateSampleContent(
       break;
     case 'persuasive':
       body = confidence > 50
-        ? 'This is the opportunity you've been waiting for.'
+        ? "This is the opportunity you've been waiting for."
         : 'We think you might find this interesting.';
       break;
     default:
