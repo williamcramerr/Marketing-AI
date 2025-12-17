@@ -26,7 +26,14 @@ export interface UserInfo {
  * OAuthService handles OAuth 2.0 flows for external provider integrations
  */
 export class OAuthService {
-  private supabase = createAdminClient();
+  private _supabase: ReturnType<typeof createAdminClient> | null = null;
+
+  private get supabase() {
+    if (!this._supabase) {
+      this._supabase = createAdminClient();
+    }
+    return this._supabase;
+  }
 
   /**
    * Generate the authorization URL for a provider

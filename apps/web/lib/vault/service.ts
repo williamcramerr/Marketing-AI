@@ -8,7 +8,14 @@ import { createAdminClient } from '@/lib/supabase/admin';
  * be decrypted by calling the appropriate RPC functions with service role access.
  */
 export class VaultService {
-  private supabase = createAdminClient();
+  private _supabase: ReturnType<typeof createAdminClient> | null = null;
+
+  private get supabase() {
+    if (!this._supabase) {
+      this._supabase = createAdminClient();
+    }
+    return this._supabase;
+  }
 
   /**
    * Store a secret in Vault and return the secret ID
