@@ -2,7 +2,7 @@ import { inngest } from '../client';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { analyzeConversation, generateResponse, batchAnalyzeConversations } from '@/lib/ai/social-listening';
 import { TwitterSearchConnector } from '@/lib/connectors/social-listening/twitter-search';
-import { RedditConnector } from '@/lib/connectors/social-listening/reddit';
+import { RedditSearchConnector } from '@/lib/connectors/social-listening/reddit';
 import type { DiscoveredConversation } from '@/lib/connectors/social-listening/base';
 
 /**
@@ -85,11 +85,20 @@ export const socialListeningScan = inngest.createFunction(
                 .single();
 
               if (creds?.credentials) {
-                connector = new RedditConnector({
+                connector = new RedditSearchConnector({
                   id: `reddit-${config.id}`,
-                  clientId: creds.credentials.client_id,
-                  clientSecret: creds.credentials.client_secret,
-                  userAgent: `MarketingPilotAI/1.0 by ${config.organizations?.name || 'user'}`,
+                  organizationId: config.organization_id,
+                  type: 'social_listening',
+                  name: 'Reddit Search',
+                  credentials: {
+                    clientId: creds.credentials.client_id,
+                    clientSecret: creds.credentials.client_secret,
+                  },
+                  config: {
+                    subreddits: config.subreddits || [],
+                  },
+                  active: true,
+                  rateLimit: { perHour: 60, perDay: 1000 },
                 });
               }
             }

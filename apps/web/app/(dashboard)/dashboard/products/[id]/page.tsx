@@ -14,9 +14,9 @@ import { getProduct } from '@/lib/actions/products';
 import { ProductForm } from '../product-form';
 
 interface ProductEditPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 function ProductEditLoading() {
@@ -135,10 +135,11 @@ async function ProductEditContent({ id }: { id: string }) {
   );
 }
 
-export default function ProductEditPage({ params }: ProductEditPageProps) {
+export default async function ProductEditPage({ params }: ProductEditPageProps) {
+  const { id } = await params;
   return (
     <Suspense fallback={<ProductEditLoading />}>
-      <ProductEditContent id={params.id} />
+      <ProductEditContent id={id} />
     </Suspense>
   );
 }
