@@ -103,7 +103,7 @@ export default async function CampaignsPage() {
 
                     {campaign.channels && campaign.channels.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {campaign.channels.map((channel) => (
+                        {campaign.channels.map((channel: string) => (
                           <Badge key={channel} variant="outline" className="text-xs">
                             {channel}
                           </Badge>

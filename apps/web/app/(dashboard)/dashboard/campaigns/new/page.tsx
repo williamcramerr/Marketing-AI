@@ -18,7 +18,7 @@ export default async function NewCampaignPage() {
   const products = await getProducts();
   const audiences = await getAudiences();
 
-  const availableChannels = ['Email', 'Social Media', 'Blog', 'Ads', 'SEO', 'Landing Pages'];
+  const availableChannels: string[] = ['Email', 'Social Media', 'Blog', 'Ads', 'SEO', 'Landing Pages'];
 
   return (
     <div className="space-y-6">
