@@ -146,6 +146,23 @@ export async function deleteListeningConfig(id: string) {
   revalidatePath('/dashboard/growth/listening');
 }
 
+export async function toggleListeningConfig(id: string, active: boolean) {
+  const supabase = await createClient();
+
+  const { data: config, error } = await supabase
+    .from('social_listening_configs')
+    .update({ active })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  revalidatePath('/dashboard/growth/listening');
+  revalidatePath('/dashboard/growth/listening/configs');
+  return config;
+}
+
 // ============================================
 // CONVERSATIONS
 // ============================================
@@ -276,11 +293,19 @@ export async function bulkUpdateConversations(
   revalidatePath('/dashboard/growth/listening');
 }
 
-// ============================================
-// REPLIES
-// ============================================
+export async function reviewConversation(id: string) {
+  return updateConversationStatus(id, 'reviewing');
+}
 
-export async function createReply(formData: FormData) {
+export async function dismissConversation(id: string, reason?: string) {
+  return updateConversationStatus(id, 'dismissed', reason);
+}
+
+export async function regenerateResponse(conversationId: string): Promise<{
+  success: boolean;
+  data?: { suggestedResponse: string };
+  error?: string;
+}> {
   const supabase = await createClient();
 
   const {
@@ -288,14 +313,89 @@ export async function createReply(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error('Not authenticated');
+    return { success: false, error: 'Not authenticated' };
   }
 
-  const conversationId = formData.get('conversation_id') as string;
-  const content = formData.get('content') as string;
-  const connectorId = formData.get('connector_id') as string | null;
-  const aiGenerated = formData.get('ai_generated') === 'true';
-  const editedContent = formData.get('edited_content') as string | null;
+  // Get the conversation context
+  const { data: conversation, error: fetchError } = await supabase
+    .from('social_conversations')
+    .select(`
+      *,
+      social_listening_configs (
+        response_template,
+        products (name, description)
+      )
+    `)
+    .eq('id', conversationId)
+    .single();
+
+  if (fetchError || !conversation) {
+    return { success: false, error: 'Conversation not found' };
+  }
+
+  // Generate a basic response template (in production, this would call an AI service)
+  const productName = conversation.social_listening_configs?.products?.name || 'our product';
+  const template = conversation.social_listening_configs?.response_template;
+
+  let suggestedResponse = template
+    ? template.replace(/\{product\}/g, productName)
+    : `Thanks for your interest! ${productName} might be a great fit for your needs. Would you like to learn more?`;
+
+  return {
+    success: true,
+    data: { suggestedResponse }
+  };
+}
+
+// ============================================
+// REPLIES
+// ============================================
+
+interface CreateReplyInput {
+  conversationId: string;
+  content: string;
+  status?: string;
+  connectorId?: string | null;
+  aiGenerated?: boolean;
+  editedContent?: string | null;
+}
+
+export async function createReply(input: FormData | CreateReplyInput): Promise<{
+  success: boolean;
+  data?: Record<string, unknown>;
+  error?: string;
+}> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: 'Not authenticated' };
+  }
+
+  let conversationId: string;
+  let content: string;
+  let connectorId: string | null = null;
+  let aiGenerated = false;
+  let editedContent: string | null = null;
+  let status = 'draft';
+
+  if (input instanceof FormData) {
+    conversationId = input.get('conversation_id') as string;
+    content = input.get('content') as string;
+    connectorId = input.get('connector_id') as string | null;
+    aiGenerated = input.get('ai_generated') === 'true';
+    editedContent = input.get('edited_content') as string | null;
+  } else {
+    conversationId = input.conversationId;
+    content = input.content;
+    connectorId = input.connectorId ?? null;
+    aiGenerated = input.aiGenerated ?? false;
+    editedContent = input.editedContent ?? null;
+    status = input.status ?? 'draft';
+  }
 
   const { data: reply, error } = await supabase
     .from('social_replies')
@@ -305,16 +405,18 @@ export async function createReply(formData: FormData) {
       content,
       ai_generated: aiGenerated,
       edited_content: editedContent,
-      status: 'draft',
+      status,
       created_by: user.id,
     })
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    return { success: false, error: error.message };
+  }
 
   revalidatePath('/dashboard/growth/listening');
-  return reply;
+  return { success: true, data: reply };
 }
 
 export async function updateReply(id: string, formData: FormData) {
@@ -339,7 +441,11 @@ export async function updateReply(id: string, formData: FormData) {
   return reply;
 }
 
-export async function approveReply(id: string) {
+export async function approveReply(id: string): Promise<{
+  success: boolean;
+  data?: Record<string, unknown>;
+  error?: string;
+}> {
   const supabase = await createClient();
 
   const {
@@ -347,7 +453,7 @@ export async function approveReply(id: string) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error('Not authenticated');
+    return { success: false, error: 'Not authenticated' };
   }
 
   const { data: reply, error } = await supabase
@@ -361,10 +467,12 @@ export async function approveReply(id: string) {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    return { success: false, error: error.message };
+  }
 
   revalidatePath('/dashboard/growth/listening');
-  return reply;
+  return { success: true, data: reply };
 }
 
 export async function rejectReply(id: string, reason: string) {
