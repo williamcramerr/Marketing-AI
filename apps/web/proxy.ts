@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { rateLimitMiddleware, applyRateLimitHeaders } from '@/lib/rate-limit/limiter';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Check rate limits first (before authentication)
   // For API routes, we rate limit by IP initially
   const rateLimitResponse = await rateLimitMiddleware(request);
